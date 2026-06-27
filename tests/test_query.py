@@ -28,7 +28,7 @@ class SearchFiltersTests(unittest.TestCase):
             'parser is:issue is:open archived:false language:"C++" '
             'label:"beginner","mentored" '
             '(repo:"owner/one" OR repo:"owner/two") no:assignee '
-            'created:>=2026-01-01 comments:<10',
+            "created:>=2026-01-01 comments:<10",
         )
 
     def test_all_labels_use_separate_qualifiers(self) -> None:
@@ -52,4 +52,3 @@ class SearchFiltersTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

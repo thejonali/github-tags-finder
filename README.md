@@ -19,6 +19,21 @@ For development without installing the command:
 PYTHONPATH=src python -m github_tags_finder --help
 ```
 
+## MCP server
+
+An optional MCP server exposes the same search engine to MCP clients. Codex is
+the currently verified client:
+
+```bash
+uv sync --extra mcp
+uv run --extra mcp github-tags-mcp
+```
+
+It provides one read-only `search_github_issues` tool over STDIO by default,
+with Streamable HTTP available for future hosted deployment. See the
+[general MCP guide](docs/mcp/mcp.md) and the verified
+[Codex setup](docs/mcp/codex.md).
+
 ## Examples
 
 Find the default beginner-friendly issues in Python repositories:
@@ -82,10 +97,7 @@ Unauthenticated searches work for public repositories but have a low API rate li
 
 ```bash
 cp .env.example .env
-# Edit .env and replace the placeholder, then load it into the current shell:
-set -a
-source .env
-set +a
+# Edit .env and replace the placeholder. The CLI and MCP server load it.
 github-tags --language Python
 ```
 

@@ -72,4 +72,3 @@ def write_text(result: SearchResult, stream: TextIO) -> None:
             f"   updated: {issue['updated_at']}\n"
             f"   {issue['url']}\n"
         )
-

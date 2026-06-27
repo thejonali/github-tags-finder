@@ -1,7 +1,7 @@
 import io
 import json
 import unittest
-from contextlib import redirect_stderr, redirect_stdout
+from contextlib import redirect_stdout
 from unittest.mock import patch
 
 from github_tags_finder.cli import main
@@ -33,18 +33,20 @@ class CliTests(unittest.TestCase):
             query="is:issue",
             total_count=1,
             incomplete_results=False,
-            items=[{
-                "repository_url": "https://api.github.com/repos/acme/widgets",
-                "number": 42,
-                "title": "Document widgets",
-                "html_url": "https://github.com/acme/widgets/issues/42",
-                "labels": [{"name": "help wanted"}],
-                "assignees": [],
-                "state": "open",
-                "comments": 3,
-                "created_at": "2026-01-01T00:00:00Z",
-                "updated_at": "2026-01-02T00:00:00Z",
-            }],
+            items=[
+                {
+                    "repository_url": "https://api.github.com/repos/acme/widgets",
+                    "number": 42,
+                    "title": "Document widgets",
+                    "html_url": "https://github.com/acme/widgets/issues/42",
+                    "labels": [{"name": "help wanted"}],
+                    "assignees": [],
+                    "state": "open",
+                    "comments": 3,
+                    "created_at": "2026-01-01T00:00:00Z",
+                    "updated_at": "2026-01-02T00:00:00Z",
+                }
+            ],
         )
         output = io.StringIO()
 
@@ -55,7 +57,10 @@ class CliTests(unittest.TestCase):
         self.assertEqual(status, 0)
         self.assertEqual(payload["items"][0]["repository"], "acme/widgets")
 
-    @patch("github_tags_finder.cli.GitHubClient.search_issues", side_effect=RuntimeError("boom"))
+    @patch(
+        "github_tags_finder.cli.GitHubClient.search_issues",
+        side_effect=RuntimeError("boom"),
+    )
     def test_unexpected_errors_are_not_hidden(self, _search_issues) -> None:
         with self.assertRaisesRegex(RuntimeError, "boom"):
             main([])
@@ -63,4 +68,3 @@ class CliTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

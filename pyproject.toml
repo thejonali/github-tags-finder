@@ -11,8 +11,12 @@ requires-python = ">=3.10"
 license = "Apache-2.0"
 dependencies = []
 
+[project.optional-dependencies]
+mcp = ["mcp>=1.27,<2"]
+
 [project.scripts]
 github-tags = "github_tags_finder.cli:main"
+github-tags-mcp = "github_tags_finder.mcp_server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/github_tags_finder"]

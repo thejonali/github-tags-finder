@@ -77,7 +77,11 @@ class GitHubClient:
             incomplete = incomplete or bool(payload.get("incomplete_results", False))
             items.extend(item for item in page_items if isinstance(item, dict))
 
-            if not page_items or len(page_items) < per_page or len(items) >= total_count:
+            if (
+                not page_items
+                or len(page_items) < per_page
+                or len(items) >= total_count
+            ):
                 break
             page += 1
 
@@ -107,7 +111,9 @@ class GitHubClient:
             reason = getattr(error, "reason", error)
             raise GitHubError(f"Could not reach GitHub: {reason}") from error
         except (json.JSONDecodeError, UnicodeDecodeError) as error:
-            raise GitHubError("GitHub returned a response that was not valid JSON") from error
+            raise GitHubError(
+                "GitHub returned a response that was not valid JSON"
+            ) from error
 
         if not isinstance(payload, dict):
             raise GitHubError("GitHub returned an unexpected response")
@@ -129,5 +135,6 @@ class GitHubClient:
             hint = " Check GITHUB_TOKEN/GH_TOKEN and the account's API rate limit."
         elif error.code == 422:
             hint = " Check the generated search query with --query-only."
-        return GitHubError(f"GitHub API request failed ({error.code}){detail}.{hint}".rstrip())
-
+        return GitHubError(
+            f"GitHub API request failed ({error.code}){detail}.{hint}".rstrip()
+        )

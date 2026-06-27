@@ -60,7 +60,9 @@ class SearchFilters:
             parts.append(f"created:{self.created}")
         if self.updated:
             parts.append(f"updated:{self.updated}")
-        parts.extend(qualifier.strip() for qualifier in self.qualifiers if qualifier.strip())
+        parts.extend(
+            qualifier.strip() for qualifier in self.qualifiers if qualifier.strip()
+        )
         return " ".join(parts)
 
     def _label_parts(self) -> list[str]:
@@ -78,4 +80,3 @@ class SearchFilters:
         if len(qualifiers) == 1:
             return qualifiers
         return [f"({' OR '.join(qualifiers)})"]
-

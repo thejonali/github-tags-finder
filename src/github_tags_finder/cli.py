@@ -9,6 +9,7 @@ from collections.abc import Sequence
 
 from . import __version__
 from .client import DEFAULT_API_URL, GitHubClient, GitHubError, MAX_SEARCH_RESULTS
+from .environment import load_github_environment
 from .output import write_json, write_text
 from .query import DEFAULT_LABELS, SearchFilters
 
@@ -40,17 +41,25 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="disable the default label filter",
     )
-    parser.add_argument("--repo", action="append", default=[], help="owner/repository (repeatable)")
+    parser.add_argument(
+        "--repo", action="append", default=[], help="owner/repository (repeatable)"
+    )
     owner = parser.add_mutually_exclusive_group()
     owner.add_argument("--org", help="limit results to an organization")
     owner.add_argument("--user", help="limit results to repositories owned by a user")
     parser.add_argument("--state", choices=("open", "closed", "all"), default="open")
     assignee = parser.add_mutually_exclusive_group()
     assignee.add_argument("--assignee", help="limit results to an assignee")
-    assignee.add_argument("--no-assignee", action="store_true", help="only unassigned issues")
+    assignee.add_argument(
+        "--no-assignee", action="store_true", help="only unassigned issues"
+    )
     parser.add_argument("--created", help="GitHub date/range, for example >=2026-01-01")
-    parser.add_argument("--updated", help="GitHub date/range, for example 2026-01-01..2026-06-01")
-    parser.add_argument("--include-archived", action="store_true", help="include archived repositories")
+    parser.add_argument(
+        "--updated", help="GitHub date/range, for example 2026-01-01..2026-06-01"
+    )
+    parser.add_argument(
+        "--include-archived", action="store_true", help="include archived repositories"
+    )
     parser.add_argument(
         "--qualifier",
         "-q",
@@ -62,17 +71,34 @@ def build_parser() -> argparse.ArgumentParser:
         "--raw-query",
         help="use a complete GitHub search query instead of all structured filters",
     )
-    parser.add_argument("--sort", choices=("comments", "reactions", "interactions", "created", "updated"), default="updated")
+    parser.add_argument(
+        "--sort",
+        choices=("comments", "reactions", "interactions", "created", "updated"),
+        default="updated",
+    )
     parser.add_argument("--direction", choices=("asc", "desc"), default="desc")
-    parser.add_argument("--limit", type=int, default=20, help=f"results to return, 1-{MAX_SEARCH_RESULTS} (default: 20)")
-    parser.add_argument("--json", action="store_true", help="emit stable JSON for scripts")
-    parser.add_argument("--query-only", action="store_true", help="print the generated query without calling GitHub")
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=20,
+        help=f"results to return, 1-{MAX_SEARCH_RESULTS} (default: 20)",
+    )
+    parser.add_argument(
+        "--json", action="store_true", help="emit stable JSON for scripts"
+    )
+    parser.add_argument(
+        "--query-only",
+        action="store_true",
+        help="print the generated query without calling GitHub",
+    )
     parser.add_argument(
         "--api-url",
         default=os.environ.get("GITHUB_API_URL", DEFAULT_API_URL),
         help="GitHub API base URL (or set GITHUB_API_URL)",
     )
-    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {__version__}"
+    )
     return parser
 
 
@@ -109,6 +135,12 @@ def _query_from_args(args: argparse.Namespace, parser: argparse.ArgumentParser) 
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    try:
+        load_github_environment()
+    except (OSError, UnicodeError, ValueError) as error:
+        print(f"error: could not load .env: {error}", file=sys.stderr)
+        return 1
+
     parser = build_parser()
     args = parser.parse_args(argv)
     if not 1 <= args.limit <= MAX_SEARCH_RESULTS:
@@ -141,4 +173,3 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

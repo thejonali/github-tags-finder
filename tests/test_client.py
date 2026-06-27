@@ -22,7 +22,11 @@ class GitHubClientTests(unittest.TestCase):
         def opener(request, timeout):
             captured["request"] = request
             captured["timeout"] = timeout
-            payload = {"total_count": 1, "incomplete_results": False, "items": [{"number": 7}]}
+            payload = {
+                "total_count": 1,
+                "incomplete_results": False,
+                "items": [{"number": 7}],
+            }
             return FakeResponse(json.dumps(payload).encode())
 
         client = GitHubClient(token="secret", timeout=4, opener=opener)
@@ -71,4 +75,3 @@ class GitHubClientTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
